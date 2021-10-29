@@ -9,6 +9,7 @@ import argparse
 import gzip
 
 parser = argparse.ArgumentParser()
+<<<<<<< HEAD
 parser.add_argument("-i", "--tables", nargs='*',
                     help="Input multiple table with same headers")
 parser.add_argument("-z", "--gzipped", action='store_true',
@@ -45,3 +46,36 @@ if all(headers == headerlines[0] for headers in headerlines):
 else:
     print("File headers are not same")
     sys.exit(1)
+=======
+parser.add_argument("tables", nargs='+',
+                    help="Input multiple table with same headers")
+parser.add_argument("-z", "--gunzip", action='store_true',
+                    help="Decompress files using gzip")
+args = parser.parse_args()
+
+def open_filehandle(file, gunzip=False):
+    if gunzip:
+        return gzip.open(file, "rt")
+    else:
+        return open(file)
+
+#Get headers
+headerlines = []
+for file in args.tables:
+    infile = open_filehandle(file, args.gunzip)
+    first_line = infile.readline()
+    headerlines += [first_line.strip()]
+    infile.close()
+
+if not all(headers == headerlines[0] for headers in headerlines):
+    print("File headers are not same")
+    sys.exit(1)
+else:
+    print(headerlines[0])
+    for file in args.tables:
+        infile = open_filehandle(file, args.gunzip)
+        next(infile)
+        for line in infile:
+            print(line.strip())
+        infile.close()
+>>>>>>> 566a7d76f2709f38429bb6e0907b8ef93fb91108
